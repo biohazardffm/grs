@@ -11,13 +11,7 @@
 #import "MyUniversalAccessHelper.h"
 #import "MyGrid.h"
 
-#import "MyLicenseVerifier.h"
-
-#import "MyCoolURLCommand.h"
-
 #import "SDOpenAtLogin.h"
-
-#import "MyCrashHandler.h"
 
 #import "SDWelcomeWindowController.h"
 
@@ -91,80 +85,16 @@
     [self.myPrefsWindowController showWindow:self];
 }
 
-- (void) endTrialIfNecessary {
-    if ([MyLicenseVerifier hasValidLicense])
-        return;
-    
-    if ([MyLicenseVerifier expired]) {
-        [self.myActor disableKeys];
-        
-        [[MyLicenseVerifier sharedLicenseVerifier] nag];
-    }
-    else {
-        [self performSelector:@selector(endTrialIfNecessary) withObject:nil afterDelay:60];
-    }
-}
-
-- (IBAction) showLicenseWindow:(id)sender {
-    [NSApp activateIgnoringOtherApps:YES];
-    
-    if (self.myLicenseWindowController == nil)
-        self.myLicenseWindowController = [[MyLicenseWindowController alloc] init];
-    
-    [self.myLicenseWindowController showWindow:self];
-}
-
-- (void) clickedLicenseWithName:(NSString*)licenseName licenceCode:(NSString*)licenseCode {
-    BOOL valid = [MyLicenseVerifier tryRegisteringWithLicenseCode:licenseCode licenseName:licenseName];
-    
-    [NSApp activateIgnoringOtherApps:YES];
-    NSInteger result = [[MyLicenseVerifier alertForValidity:valid fromLink:YES] runModal];
-    
-    if (result == NSAlertSecondButtonReturn)
-        [MyLicenseVerifier sendToWebsite];
-}
-
 - (void) applicationWillFinishLaunching:(NSNotification *)notification {
     self.myActor = [[MyActor alloc] init];
-    
-    [[NSNotificationCenter defaultCenter] addObserverForName:MyLicenseVerifiedNotification
-                                                      object:nil
-                                                       queue:nil
-                                                  usingBlock:^(NSNotification *note) {
-                                                      [self.myActor enableKeys];
-                                                  }];
-    
-    [[NSNotificationCenter defaultCenter] addObserverForName:MyClickedAutoRegURLNotification
-                                                      object:nil
-                                                       queue:nil
-                                                  usingBlock:^(NSNotification *note) {
-                                                      NSString* licenseName = [[note userInfo] objectForKey:@"name"];
-                                                      NSString* licenseCode = [[note userInfo] objectForKey:@"code"];
-                                                      
-                                                      [self clickedLicenseWithName:licenseName
-                                                                       licenceCode:licenseCode];
-                                                  }];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    [MyCrashHandler handleCrashes];
-    
     [self.myActor bindMyKeys];
     
     [MyUniversalAccessHelper complainIfNeeded];
     
     [SDWelcomeWindowController showInstructionsWindowFirstTimeOnly];
-    
-    [self endTrialIfNecessary];
-}
-
-- (IBAction) showSendFeedbackWindow:(id)sender {
-    [NSApp activateIgnoringOtherApps:YES];
-    
-    if (self.myFeedbackWindowController == nil)
-        self.myFeedbackWindowController = [[MyFeedbackWindowController alloc] init];
-    
-    [self.myFeedbackWindowController showWindow:self];
 }
 
 @end

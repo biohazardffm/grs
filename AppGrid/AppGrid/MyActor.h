@@ -12,7 +12,4 @@
 
 - (void) bindMyKeys;
 
-- (void) disableKeys;
-- (void) enableKeys;
-
 @end
