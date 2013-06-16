@@ -10,10 +10,6 @@
 
 #import "MyPrefsWindowController.h"
 #import "MyActor.h"
-#import "MyLicenseWindowController.h"
-#import "MyFeedbackWindowController.h"
-
-#import <Sparkle/Sparkle.h>
 
 @interface AppDelegate : NSObject <NSApplicationDelegate, NSMenuDelegate>
 
@@ -22,9 +18,5 @@
 
 @property MyPrefsWindowController *myPrefsWindowController;
 @property MyActor *myActor;
-@property MyLicenseWindowController *myLicenseWindowController;
-@property MyFeedbackWindowController* myFeedbackWindowController;
-
-@property IBOutlet SUUpdater *updater;
 
 @end
